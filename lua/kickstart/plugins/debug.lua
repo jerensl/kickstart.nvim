@@ -171,7 +171,23 @@ return {
         request = 'launch',
         program = function()
           local cwd = vim.fn.getcwd()
-          local default_binary = cwd .. '/target/debug/' .. vim.fn.fnamemodify(cwd, ':t')
+          local cargo_toml = cwd .. '/Cargo.toml'
+
+          local binary_name = vim.fn.fnamemodify(cwd, ':t') -- Fallback to folder name
+
+          -- Read Cargo.toml to find the actual package name
+          if vim.fn.filereadable(cargo_toml) == 1 then
+            for _, line in ipairs(vim.fn.readfile(cargo_toml)) do
+              -- Look for name = "package_name" under the [package] table
+              local name = string.match(line, '^%s*name%s*=%s*["\']([^"\']+)["\']')
+              if name then
+                binary_name = name
+                break -- Stop reading once we find the name
+              end
+            end
+          end
+
+          local default_binary = cwd .. '/target/debug/' .. binary_name
           return vim.fn.input('Path to executable: ', default_binary, 'file')
         end,
         cwd = '${workspaceFolder}',
@@ -179,8 +195,12 @@ return {
       },
     }
 
-    -- Override default configurations with `launch.json`
-    require('dap.ext.vscode').load_launchjs('.nvim/launch.json', { lldb = { 'c', 'cpp', 'rust' } })
+    local vscode = require 'dap.ext.vscode'
+
+    -- 1. Define the adapter-to-filetype mappings
+    vscode.type_to_filetypes = {
+      lldb = { 'c', 'cpp', 'rust' },
+    }
 
     vim.keymap.set('n', '<space>b', dap.toggle_breakpoint)
     vim.keymap.set('n', '<space>gb', dap.run_to_cursor)
