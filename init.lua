@@ -728,6 +728,13 @@ do
   vim.pack.add { gh 'j-hui/fidget.nvim' }
   require('fidget').setup {}
 
+  vim.pack.add {{
+    src = 'https://github.com/mrcjkb/rustaceanvim',
+    -- To avoid being surprised by breaking changes,
+    -- I recommend you set a version range
+    version = vim.version.range('^9')
+  }}
+
   --  This function gets run when an LSP attaches to a particular buffer.
   --    That is to say, every time a new file is opened that is associated with
   --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -873,7 +880,7 @@ do
     -- You can add other tools here that you want Mason to install
   })
 
-  require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+  require('mason-lspconfig').setup { ensure_installed = ensure_installed }
 
   for name, server in pairs(servers) do
     vim.lsp.config(name, server)
@@ -1079,12 +1086,12 @@ do
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
 
-  -- require 'kickstart.plugins.debug'
-  -- require 'kickstart.plugins.indent_line'
-  -- require 'kickstart.plugins.lint'
-  -- require 'kickstart.plugins.autopairs'
-  -- require 'kickstart.plugins.neo-tree'
-  -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
+  require 'kickstart.plugins.debug'
+  require 'kickstart.plugins.indent_line'
+  require 'kickstart.plugins.lint'
+  require 'kickstart.plugins.autopairs'
+  require 'kickstart.plugins.neo-tree'
+  require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --
