@@ -28,6 +28,7 @@ return {
       local sources = {
         -- Linters
         diagnostics.checkmake,
+        diagnostics.cppcheck,
 
         -- ESLint diagnostics (ESLint 9 compatible)
         require('none-ls.diagnostics.eslint_d').with {
@@ -62,6 +63,10 @@ return {
         formatting.terraform_fmt,
         require('none-ls.formatting.ruff').with { extra_args = { '--config=pyproject.toml' } },
         -- require('none-ls.formatting.ruff_format').with { extra_args = { '--config=pyproject.toml' } },
+        formatting.clang_format.with({
+          -- Optional: Pass custom arguments to clang-format
+          extra_args = { "-style={BasedOnStyle: Google, IndentWidth: 4}" },
+        }),
       }
 
       local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
